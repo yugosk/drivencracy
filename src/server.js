@@ -12,5 +12,5 @@ server.use(express.json());
 server.use(pollRouter);
 server.use(choiceRouter);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
