@@ -28,7 +28,7 @@ export async function checkPoll(req, res, next) {
 
   const checkTitle = await db
     .collection("choices")
-    .findOne({ title: newChoice.title });
+    .findOne({ title: newChoice.title, poolId: _id });
 
   if (checkTitle) return res.status(409).send("Escolha outro título");
 
