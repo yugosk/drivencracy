@@ -38,18 +38,15 @@ export async function getPollChoices(req, res) {
 export async function postVote(req, res) {
   const _id = res.locals._id;
   const choiceId = res.locals.choiceId;
-
   try {
-    console.log(await db.collection("results").findOne({ pollId: _id }));
     await db.collection("results").updateOne(
-      { pollId: _id },
+      { pollId: _id, _id: choiceId },
       {
         $inc: {
           votes: 1,
         },
       }
     );
-    console.log(await db.collection("results").findOne({ pollId: _id }));
     res.sendStatus(201);
   } catch (error) {
     res.sendStatus(500);
