@@ -1,4 +1,3 @@
-import { pollSchema } from "../schemas/pollSchema.js";
 import db from "../db/mongodb.js";
 import dayjs from "dayjs";
 

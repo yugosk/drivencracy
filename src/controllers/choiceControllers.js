@@ -10,7 +10,16 @@ export async function postChoice(req, res) {
       title: newChoice.title,
       poolId: new ObjectId(newChoice.poolId),
     });
+
+    const teste = await db.collection("choices").findOne({
+      title: newChoice.title,
+      poolId: new ObjectId(newChoice.poolId),
+    });
+
+    const choiceId = teste._id;
+
     await db.collection("results").insertOne({
+      choiceId,
       pollId,
       title: newChoice.title,
       votes: 0,
@@ -36,11 +45,10 @@ export async function getPollChoices(req, res) {
 }
 
 export async function postVote(req, res) {
-  const _id = res.locals._id;
   const choiceId = res.locals.choiceId;
   try {
     await db.collection("results").updateOne(
-      { pollId: _id, _id: choiceId },
+      { choiceId },
       {
         $inc: {
           votes: 1,
