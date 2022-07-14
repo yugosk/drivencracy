@@ -34,21 +34,19 @@ export async function getPolls(req, res) {
 }
 
 export async function getPollResults(req, res) {
+  const pollId = res.locals.pollId;
   const pollTitle = res.locals.pollTitle;
   const response = {
     _id: res.locals.pollId,
     title: pollTitle,
     expireAt: res.locals.expireAt,
     result: {
-      title,
-      votes,
+      title: "",
+      votes: 0,
     },
   };
   try {
-    const results = await db
-      .collection(`results-${pollTitle}`)
-      .find({})
-      .toArray();
+    const results = await db.collection("results").find({ pollId }).toArray();
 
     let higher = results[0];
     for (let i = 1; i < results.length; i++) {

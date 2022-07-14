@@ -16,7 +16,7 @@ export async function validateChoiceFormat(req, res, next) {
 
 export async function checkPoll(req, res, next) {
   const newChoice = res.locals.choice;
-  const _id = new ObjectId(newChoice.poolId);
+  const _id = ObjectId(newChoice.poolId);
 
   const checkPoll = await db.collection("polls").findOne({ _id });
   if (!checkPoll) return res.status(404).send("Enquete não encontrada");
@@ -31,8 +31,6 @@ export async function checkPoll(req, res, next) {
     .findOne({ title: newChoice.title });
 
   if (checkTitle) return res.status(409).send("Escolha outro título");
-
-  res.locals.pollTitle = checkPoll.title;
 
   next();
 }
@@ -51,24 +49,20 @@ export async function checkPollId(req, res, next) {
 
 export async function checkChoiceId(req, res, next) {
   const _id = new ObjectId(req.params.id);
+
   const checkChoice = await db.collection("choices").findOne({ _id });
   if (!checkChoice) return res.status(404).send("Opção de voto não encontrada");
 
-  const poll = new ObjectId(checkChoice.poolId);
-  const findPoll = await db.collection("polls").findOne({ _id: poll });
-
-  res.locals.choiceTitle = checkChoice.title;
-  res.locals.pollTitle = findPoll.title;
-  res.locals.choiceId = checkChoice;
+  res.locals._id = checkChoice.poolId;
+  res.locals.choiceId = _id;
   next();
 }
 
 export async function checkExpiration(req, res, next) {
-  const checkChoice = res.locals.choiceId;
-  const _id = new ObjectId(checkChoice.poolId);
-  const checkPoll = await db.collection("polls").findOne({ _id });
+  const _id = res.locals._id;
+  const searchPoll = await db.collection("polls").findOne({ _id });
 
-  const expireDate = dayjs(checkPoll.expireAt, "YYYY-MM-DD HH:mm");
+  const expireDate = dayjs(searchPoll.expireAt, "YYYY-MM-DD HH:mm");
   if (!dayjs().isBefore(expireDate)) {
     return res.status(403).send("Enquete já expirada");
   }
